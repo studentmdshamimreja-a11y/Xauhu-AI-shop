@@ -11,7 +11,7 @@
     header,main,footer{width:min(1100px,calc(100% - 36px));margin:auto}
     header{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e6e4dc}
     .header-actions{display:flex;align-items:center;gap:12px}.logo{font-size:21px;font-weight:800;letter-spacing:-1px}.logo span{color:#8e82dc}
-    .tag{font-size:13px;color:#777}.profile-button{border:1px solid #dedbe8;background:#fff;border-radius:22px;padding:8px 13px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+    .tag{font-size:13px;color:#777}.profile-button,.wallet-button{border:1px solid #dedbe8;background:#fff;border-radius:22px;padding:8px 13px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
     .hero{padding:76px 0 52px}.eyebrow{font-size:12px;font-weight:700;letter-spacing:2px;color:#777}
     h1{font-size:clamp(42px,8vw,76px);line-height:1.02;letter-spacing:-4px;margin:15px 0}
     h1 span{color:#8e82dc}.hero p{max-width:520px;color:#666;font-size:17px}
@@ -25,19 +25,27 @@
     .info{padding:17px}.category{font-size:11px;color:#777}.info h3{margin:7px 0;font-size:18px}
     .info p{min-height:42px;margin:0;color:#666;font-size:13px}.price{margin-top:15px;font-weight:700}
     .message{padding:22px;color:#666;text-align:center}.notice{font-size:12px;color:#777;margin:-52px 0 55px}
+    .dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin:30px 0 16px}.stat{background:white;border:1px solid #eceae4;border-radius:12px;padding:18px}.label{font-size:11px;color:#777}.value{font-size:28px;font-weight:800;letter-spacing:-1px;margin:8px 0 0}.meta{margin-top:8px;color:#666;font-size:12px}
     footer{border-top:1px solid #e6e4dc;padding:22px 0;color:#777;font-size:12px}
     dialog{width:min(430px,calc(100% - 32px));border:1px solid #e6e4dc;border-radius:14px;padding:24px;color:#17171b;box-shadow:0 20px 70px #17171b33}dialog::backdrop{background:#17171b88}.profile-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.profile-head h2{font-size:23px}.close-button{width:34px;height:34px;border:1px solid #e6e4dc;border-radius:50%;background:#fff;font-size:21px;cursor:pointer}.profile-help{font-size:12px;color:#6b6972;margin:0 0 18px}.profile-form label{display:block;margin:13px 0 5px;font-size:12px;font-weight:700}.profile-form input{width:100%;padding:11px 12px;border:1px solid #dcd9d2;border-radius:7px;font:inherit;font-size:14px}.profile-form input:focus{outline:2px solid #8e82dc;outline-offset:1px}.profile-actions{display:flex;gap:9px;margin-top:20px}.profile-actions button{flex:1;padding:11px;border:0;border-radius:7px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}.save-button{background:#17171b;color:white}.cancel-button{background:#efeee9;color:#333}.profile-status{min-height:18px;margin:12px 0 0;color:#5a7950;font-size:12px}
     @media(max-width:600px){header,main,footer{width:calc(100% - 30px)}header{height:64px}.tag{display:none}.hero{padding-top:52px}h1{letter-spacing:-2px}.shop-head{display:block}.shop-head p{margin-top:7px}}
   </style>
 </head>
 <body>
-  <header><a class="logo" href="/">xauhu<span>.ai</span></a><div class="header-actions"><span class="tag">Tools for what's next</span><button class="profile-button" id="profile-button" type="button">My profile</button></div></header>
+  <header><a class="logo" href="/">xauhu<span>.ai</span></a><div class="header-actions"><span class="tag">Tools for what's next</span><button class="wallet-button" id="wallet-button" type="button">Wallet</button><button class="profile-button" id="profile-button" type="button">My profile</button></div></header>
   <main>
     <section class="hero">
       <div class="eyebrow">YOUR AI, UPGRADED</div>
       <h1>Good ideas.<br><span>Better tools.</span></h1>
       <p>Discover useful AI tools and digital products picked to help you create, learn, and get more done.</p>
     </section>
+
+    <section class="dashboard" aria-label="Customer dashboard">
+      <div class="stat"><div class="label">Current balance</div><div class="value" id="wallet-balance">$0.00</div><div class="meta" id="wallet-meta">No wallet activity yet.</div></div>
+      <div class="stat"><div class="label">Profile</div><div class="value" id="profile-name-preview">Guest</div><div class="meta" id="profile-email-preview">No email saved</div></div>
+      <div class="stat"><div class="label">Orders</div><div class="value" id="orders-count">0</div><div class="meta">Checkout remains disabled until payment is live.</div></div>
+    </section>
+
     <section>
       <div class="shop-head"><h2>Explore the shop</h2><p>Curated tools for curious minds.</p></div>
       <div id="products" class="grid" aria-live="polite"><div class="message">Loading products…</div></div>
@@ -60,6 +68,33 @@
     const host = document.getElementById('products');
     const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const formatUSD = amount => new Intl.NumberFormat(undefined,{style:'currency',currency:'USD'}).format(amount);
+
+    function readProfile() {
+      try { return JSON.parse(localStorage.getItem('xauhu-profile') || 'null'); }
+      catch { return null; }
+    }
+    function readWallet() {
+      try { return JSON.parse(localStorage.getItem('xauhu-wallet') || '{"balance":0,"orders":0,"lastActivity":"No wallet activity yet."}'); }
+      catch { return {balance:0,orders:0,lastActivity:'No wallet activity yet.'}; }
+    }
+    function saveWallet(wallet) {
+      localStorage.setItem('xauhu-wallet', JSON.stringify(wallet));
+    }
+    function refreshProfileUI() {
+      const profile = readProfile();
+      const profileName = profile?.name ? profile.name : 'Guest';
+      const profileEmail = profile?.email ? profile.email : 'No email saved';
+      document.getElementById('profile-name-preview').textContent = profileName;
+      document.getElementById('profile-email-preview').textContent = profileEmail;
+      document.getElementById('profile-button').textContent = profile?.name ? `Hi, ${profile.name}` : 'My profile';
+    }
+    function refreshWalletUI() {
+      const wallet = readWallet();
+      document.getElementById('wallet-balance').textContent = formatUSD(Number(wallet.balance || 0));
+      document.getElementById('orders-count').textContent = String(wallet.orders || 0);
+      document.getElementById('wallet-meta').textContent = wallet.lastActivity || 'No wallet activity yet.';
+    }
+
     async function showProducts() {
       try {
         const response = await fetch('/api/products');
@@ -89,10 +124,8 @@
     const profileForm = document.getElementById('profile-form');
     const profileStatus = document.getElementById('profile-status');
     const profileButton = document.getElementById('profile-button');
-    function readProfile() {
-      try { return JSON.parse(localStorage.getItem('xauhu-profile') || 'null'); }
-      catch { return null; }
-    }
+    const walletButton = document.getElementById('wallet-button');
+
     function openProfile() {
       const profile = readProfile();
       profileForm.elements.name.value = profile?.name || '';
@@ -101,11 +134,27 @@
       profileDialog.showModal();
       profileForm.elements.name.focus();
     }
-    function refreshProfileButton() {
+    function updateWalletFromProfile() {
       const profile = readProfile();
-      profileButton.textContent = profile?.name ? `Hi, ${profile.name}` : 'My profile';
+      const wallet = readWallet();
+      if (!profile?.name) {
+        wallet.lastActivity = 'Guest profile is active. Save a name to personalize your wallet.';
+      } else if (!profile?.email) {
+        wallet.lastActivity = 'Save an email to complete your buyer profile.';
+      } else {
+        wallet.lastActivity = `${profile.name} is ready to shop.`;
+      }
+      saveWallet(wallet);
+      refreshWalletUI();
     }
+
     profileButton.addEventListener('click', openProfile);
+    walletButton.addEventListener('click', () => {
+      const wallet = readWallet();
+      wallet.lastActivity = 'Wallet is local-only and ready for checkout integration.';
+      saveWallet(wallet);
+      refreshWalletUI();
+    });
     document.getElementById('close-profile').addEventListener('click', () => profileDialog.close());
     document.getElementById('cancel-profile').addEventListener('click', () => profileDialog.close());
     profileDialog.addEventListener('click', event => { if (event.target === profileDialog) profileDialog.close(); });
@@ -114,13 +163,17 @@
       const profile = {name: profileForm.elements.name.value.trim(), email: profileForm.elements.email.value.trim()};
       try {
         localStorage.setItem('xauhu-profile', JSON.stringify(profile));
-        refreshProfileButton();
         profileStatus.textContent = 'Profile saved on this browser.';
+        refreshProfileUI();
+        updateWalletFromProfile();
+        setTimeout(() => profileDialog.close(), 700);
       } catch {
         profileStatus.textContent = 'Could not save profile in this browser.';
       }
     });
-    refreshProfileButton();
+
+    refreshProfileUI();
+    refreshWalletUI();
     showProducts();
   </script>
 </body>
