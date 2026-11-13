@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
     return res.status(405).json({ error: 'Method not allowed' });
@@ -12,14 +12,15 @@ export default async function handler(req, res) {
   try {
     const response = await fetch(
       'https://silvex-ai.com/api/public/reseller/products',
-      { headers: { 'x-api-key': apiKey, 'accept': 'application/json' } }
+      { headers: { 'x-api-key': apiKey, accept: 'application/json' } }
     );
 
     const body = await response.text();
     res.status(response.status);
     res.setHeader('Content-Type', 'application/json');
     return res.send(body);
-  } catch {
+  } catch (error) {
+    console.error('Silvex products request failed:', error);
     return res.status(502).json({ error: 'Could not reach the product service' });
   }
-}
+};
