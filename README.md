@@ -1,26 +1,23 @@
 # Xauhu AI Shop
 
-A small storefront for AI tools and digital products.
+A simple product storefront. Customers can browse products without creating an account and follow a product's supplied HTTPS checkout/payment URL.
 
-## Customer account setup
+## Vercel environment variable
 
-The account page is available at `/account.html` (or `/account` if your Vercel deployment serves extensionless static routes). It supports email/password signup, login, session checks, and logout through Supabase Auth. Passwords are never stored by this storefront; the session access token is placed in an `HttpOnly`, `SameSite=Lax` cookie.
+Set `SILVEX_API_KEY` in Vercel Project Settings → Environment Variables for the product catalogue API, then redeploy.
 
-Before signup/login can work, configure these environment variables in **Vercel → Project → Settings → Environment Variables** and redeploy:
+## Checkout link behavior
 
-- `SUPABASE_URL` — your Supabase project URL, e.g. `https://<project-ref>.supabase.co`
-- `SUPABASE_ANON_KEY` — the project's public/anon key (do not use a service-role key)
+The storefront looks for HTTPS payment-link fields on each product: `checkoutUrl`, `checkout_url`, `checkoutLink`, `checkout_link`, `paymentUrl`, `payment_url`, `paymentLink`, `payment_link`, `purchaseUrl`, `purchase_url`, `buyUrl`, `buy_url`, `orderUrl`, `order_url`, or `links.checkout` / `links.payment`. A Buy now link opens the supplied URL in a new tab. If the API does not include one of these fields, the product displays “Payment link unavailable.” The storefront does not invent a payment URL or collect card details.
 
-In Supabase Authentication settings, configure the site URL and allowed redirect URLs for your deployed Vercel domain. Turn on email confirmation if you want verified accounts; signup will then ask customers to check their email. Supabase's auth rate limits and password policy also apply.
+Before accepting orders, verify the provider's actual product response and checkout links, final customer prices, payment completion, product delivery, refunds, and support arrangements. Product images also require image URLs in the API response.
 
-Until these settings are present, `/api/auth` deliberately returns a configuration error. The customer account page does not create local-only or fake accounts. Sessions use the access-token lifetime returned by Supabase; after it expires, the customer will need to sign in again.
+## Customer accounts
 
-## Product service setup
-
-Set `SILVEX_API_KEY` in Vercel for `/api/products` to load reseller products. Product image display depends on the product API returning an image URL.
+Signup and login have been removed; customers do not need an account to browse or use a product payment link. `/account.html` redirects to the shop and `/api/auth` is disabled.
 
 ## Current limitations
 
-- Checkout/payment and order fulfillment are not implemented.
-- Customer wallet, order history, and persisted profiles are not backed by a database.
-- Review the provider settings and test signup, email confirmation, login, session expiry, and logout on the deployed site before accepting customers.
+- Payment-link field names must match the provider's actual API response; verify a sample product payload in the provider documentation/dashboard.
+- Product price currently displays the API price with a 20% customer markup in the browser. Confirm this matches your reseller agreement and that the provider checkout charges the intended final amount.
+- Customer accounts, cart persistence, wallet, and order history are not provided.
