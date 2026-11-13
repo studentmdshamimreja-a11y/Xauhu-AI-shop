@@ -10,8 +10,8 @@
     *{box-sizing:border-box}body{margin:0;background:#f7f6f2;color:#17171b;font:16px/1.5 system-ui,sans-serif}
     header,main,footer{width:min(1100px,calc(100% - 36px));margin:auto}
     header{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e6e4dc}
-    .logo{font-size:21px;font-weight:800;letter-spacing:-1px}.logo span{color:#8e82dc}
-    .tag{font-size:13px;color:#777}
+    .header-actions{display:flex;align-items:center;gap:12px}.logo{font-size:21px;font-weight:800;letter-spacing:-1px}.logo span{color:#8e82dc}
+    .tag{font-size:13px;color:#777}.profile-button{border:1px solid #dedbe8;background:#fff;border-radius:22px;padding:8px 13px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
     .hero{padding:76px 0 52px}.eyebrow{font-size:12px;font-weight:700;letter-spacing:2px;color:#777}
     h1{font-size:clamp(42px,8vw,76px);line-height:1.02;letter-spacing:-4px;margin:15px 0}
     h1 span{color:#8e82dc}.hero p{max-width:520px;color:#666;font-size:17px}
@@ -26,11 +26,12 @@
     .info p{min-height:42px;margin:0;color:#666;font-size:13px}.price{margin-top:15px;font-weight:700}
     .message{padding:22px;color:#666;text-align:center}.notice{font-size:12px;color:#777;margin:-52px 0 55px}
     footer{border-top:1px solid #e6e4dc;padding:22px 0;color:#777;font-size:12px}
-    @media(max-width:600px){.hero{padding-top:52px}h1{letter-spacing:-2px}.shop-head{display:block}.shop-head p{margin-top:7px}}
+    dialog{width:min(430px,calc(100% - 32px));border:1px solid #e6e4dc;border-radius:14px;padding:24px;color:#17171b;box-shadow:0 20px 70px #17171b33}dialog::backdrop{background:#17171b88}.profile-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.profile-head h2{font-size:23px}.close-button{width:34px;height:34px;border:1px solid #e6e4dc;border-radius:50%;background:#fff;font-size:21px;cursor:pointer}.profile-help{font-size:12px;color:#6b6972;margin:0 0 18px}.profile-form label{display:block;margin:13px 0 5px;font-size:12px;font-weight:700}.profile-form input{width:100%;padding:11px 12px;border:1px solid #dcd9d2;border-radius:7px;font:inherit;font-size:14px}.profile-form input:focus{outline:2px solid #8e82dc;outline-offset:1px}.profile-actions{display:flex;gap:9px;margin-top:20px}.profile-actions button{flex:1;padding:11px;border:0;border-radius:7px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}.save-button{background:#17171b;color:white}.cancel-button{background:#efeee9;color:#333}.profile-status{min-height:18px;margin:12px 0 0;color:#5a7950;font-size:12px}
+    @media(max-width:600px){header,main,footer{width:calc(100% - 30px)}header{height:64px}.tag{display:none}.hero{padding-top:52px}h1{letter-spacing:-2px}.shop-head{display:block}.shop-head p{margin-top:7px}}
   </style>
 </head>
 <body>
-  <header><a class="logo" href="/">xauhu<span>.ai</span></a><span class="tag">Tools for what's next</span></header>
+  <header><a class="logo" href="/">xauhu<span>.ai</span></a><div class="header-actions"><span class="tag">Tools for what's next</span><button class="profile-button" id="profile-button" type="button">My profile</button></div></header>
   <main>
     <section class="hero">
       <div class="eyebrow">YOUR AI, UPGRADED</div>
@@ -39,11 +40,21 @@
     </section>
     <section>
       <div class="shop-head"><h2>Explore the shop</h2><p>Curated tools for curious minds.</p></div>
-      <div id="products" class="grid"><div class="message">Loading products…</div></div>
+      <div id="products" class="grid" aria-live="polite"><div class="message">Loading products…</div></div>
       <p class="notice">Product browsing is available. Prices are customer-facing and include a 20% markup.</p>
     </section>
   </main>
   <footer>© <span id="year"></span> Xauhu AI Shop</footer>
+  <dialog id="profile-dialog" aria-labelledby="profile-title">
+    <div class="profile-head"><h2 id="profile-title">Your profile</h2><button class="close-button" id="close-profile" type="button" aria-label="Close profile">×</button></div>
+    <p class="profile-help">Set a display name and email for this browser. This demo saves them only on this device; it is not a secure account and does not sync to an admin dashboard.</p>
+    <form class="profile-form" id="profile-form">
+      <label for="profile-name">Name</label><input id="profile-name" name="name" autocomplete="name" maxlength="80" required>
+      <label for="profile-email">Email</label><input id="profile-email" name="email" type="email" autocomplete="email" maxlength="254" required>
+      <div class="profile-actions"><button class="save-button" type="submit">Save profile</button><button class="cancel-button" id="cancel-profile" type="button">Cancel</button></div>
+      <p class="profile-status" id="profile-status" role="status" aria-live="polite"></p>
+    </form>
+  </dialog>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
     const host = document.getElementById('products');
@@ -73,6 +84,43 @@
         console.error(error);
       }
     }
+
+    const profileDialog = document.getElementById('profile-dialog');
+    const profileForm = document.getElementById('profile-form');
+    const profileStatus = document.getElementById('profile-status');
+    const profileButton = document.getElementById('profile-button');
+    function readProfile() {
+      try { return JSON.parse(localStorage.getItem('xauhu-profile') || 'null'); }
+      catch { return null; }
+    }
+    function openProfile() {
+      const profile = readProfile();
+      profileForm.elements.name.value = profile?.name || '';
+      profileForm.elements.email.value = profile?.email || '';
+      profileStatus.textContent = '';
+      profileDialog.showModal();
+      profileForm.elements.name.focus();
+    }
+    function refreshProfileButton() {
+      const profile = readProfile();
+      profileButton.textContent = profile?.name ? `Hi, ${profile.name}` : 'My profile';
+    }
+    profileButton.addEventListener('click', openProfile);
+    document.getElementById('close-profile').addEventListener('click', () => profileDialog.close());
+    document.getElementById('cancel-profile').addEventListener('click', () => profileDialog.close());
+    profileDialog.addEventListener('click', event => { if (event.target === profileDialog) profileDialog.close(); });
+    profileForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const profile = {name: profileForm.elements.name.value.trim(), email: profileForm.elements.email.value.trim()};
+      try {
+        localStorage.setItem('xauhu-profile', JSON.stringify(profile));
+        refreshProfileButton();
+        profileStatus.textContent = 'Profile saved on this browser.';
+      } catch {
+        profileStatus.textContent = 'Could not save profile in this browser.';
+      }
+    });
+    refreshProfileButton();
     showProducts();
   </script>
 </body>
