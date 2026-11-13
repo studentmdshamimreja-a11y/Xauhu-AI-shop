@@ -19,9 +19,10 @@
     h2{font-size:28px;letter-spacing:-1px;margin:0}.shop-head p{color:#777;font-size:13px;margin:0}
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;padding-bottom:75px}
     .card{background:white;border:1px solid #eceae4;border-radius:8px;overflow:hidden}
-    .art{height:165px;display:grid;place-items:center;background:linear-gradient(135deg,#d9d3fa,#c7e9d8);font-size:56px;color:#292633}
+    .art{height:165px;position:relative;display:grid;place-items:center;background:linear-gradient(135deg,#d9d3fa,#c7e9d8);font-size:56px;color:#292633;overflow:hidden}
     .card:nth-child(3n+2) .art{background:linear-gradient(135deg,#e1f58d,#ffd6c8)}
     .card:nth-child(3n) .art{background:linear-gradient(135deg,#c9e2f4,#f2cbe4)}
+    .product-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.image-fallback{z-index:0}
     .info{padding:17px}.category{font-size:11px;color:#777}.info h3{margin:7px 0;font-size:18px}
     .info p{min-height:42px;margin:0;color:#666;font-size:13px}.price{margin-top:15px;font-weight:700}
     .message{padding:22px;color:#666;text-align:center}.notice{font-size:12px;color:#777;margin:-52px 0 55px}
@@ -49,7 +50,7 @@
     <section>
       <div class="shop-head"><h2>Explore the shop</h2><p>Curated tools for curious minds.</p></div>
       <div id="products" class="grid" aria-live="polite"><div class="message">Loading products…</div></div>
-      <p class="notice">Product browsing is available. Prices are customer-facing and include a 20% markup.</p>
+      <p class="notice">Prices shown are the final customer prices.</p>
     </section>
   </main>
   <footer>© <span id="year"></span> Xauhu AI Shop</footer>
@@ -68,6 +69,14 @@
     const host = document.getElementById('products');
     const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const formatUSD = amount => new Intl.NumberFormat(undefined,{style:'currency',currency:'USD'}).format(amount);
+    function productImageURL(product) {
+      const raw = product.imageUrl ?? product.image_url ?? product.image ?? product.thumbnailUrl ?? product.thumbnail ?? product.photo;
+      if (typeof raw !== 'string' || !raw.trim()) return '';
+      try {
+        const url = new URL(raw.trim(), window.location.origin);
+        return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : '';
+      } catch { return ''; }
+    }
 
     function readProfile() {
       try { return JSON.parse(localStorage.getItem('xauhu-profile') || 'null'); }
@@ -112,8 +121,16 @@
           const price = Number(p.price ?? p.resellerPrice ?? p.amount);
           const customerPrice = Number.isFinite(price) ? price * 1.2 : null;
           const displayPrice = customerPrice !== null ? formatUSD(customerPrice) : 'See product details';
-          return `<article class="card"><div class="art" aria-hidden="true">${['✳','✦','◈','↗'][i % 4]}</div><div class="info"><div class="category">${escapeHTML(category)}</div><h3>${escapeHTML(name)}</h3><p>${escapeHTML(description)}</p><div class="price"><strong>${displayPrice}</strong></div></div></article>`;
+          const imageURL = productImageURL(p);
+          const imageMarkup = imageURL ? `<img class="product-image" src="${escapeHTML(imageURL)}" alt="${escapeHTML(name)} product image" loading="lazy"><span class="image-fallback" aria-hidden="true" hidden>✳</span>` : '<span class="image-fallback" aria-hidden="true">✳</span>';
+          return `<article class="card"><div class="art" aria-hidden="true">${imageMarkup}</div><div class="info"><div class="category">${escapeHTML(category)}</div><h3>${escapeHTML(name)}</h3><p>${escapeHTML(description)}</p><div class="price"><strong>${displayPrice}</strong></div></div></article>`;
         }).join('');
+        host.querySelectorAll('.product-image').forEach(image => {
+          const fallback = image.nextElementSibling;
+          image.addEventListener('error', () => { image.hidden = true; fallback.hidden = false; }, {once:true});
+          image.addEventListener('load', () => { fallback.hidden = true; }, {once:true});
+          if (image.complete && image.naturalWidth === 0) { image.hidden = true; fallback.hidden = false; }
+        });
       } catch (error) {
         host.innerHTML = '<div class="message">Could not load products. Check the API setup and try again.</div>';
         console.error(error);
