@@ -4,73 +4,54 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#17171b">
-  <meta name="description" content="Explore AI tools and digital products at Xauhu AI Shop.">
-  <title>Xauhu AI Shop</title>
+  <meta name="description" content="Explore useful AI tools and digital products at Xauhu AI Shop.">
+  <title>Xauhu AI Shop — Tools for what's next</title>
   <style>
-    *{box-sizing:border-box}body{margin:0;background:#f7f6f2;color:#17171b;font:16px/1.5 system-ui,sans-serif}
-    header,main,footer{width:min(1100px,calc(100% - 36px));margin:auto}
-    header{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e6e4dc}
-    .logo{font-size:21px;font-weight:800;letter-spacing:-1px}.logo span{color:#8e82dc}
-    .tag{font-size:13px;color:#777}
-    .hero{padding:76px 0 52px}.eyebrow{font-size:12px;font-weight:700;letter-spacing:2px;color:#777}
-    h1{font-size:clamp(42px,8vw,76px);line-height:1.02;letter-spacing:-4px;margin:15px 0}
-    h1 span{color:#8e82dc}.hero p{max-width:520px;color:#666;font-size:17px}
-    .shop-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:25px 0}
-    h2{font-size:28px;letter-spacing:-1px;margin:0}.shop-head p{color:#777;font-size:13px;margin:0}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;padding-bottom:75px}
-    .card{background:white;border:1px solid #eceae4;border-radius:8px;overflow:hidden}
-    .art{height:165px;display:grid;place-items:center;background:linear-gradient(135deg,#d9d3fa,#c7e9d8);font-size:56px;color:#292633}
-    .card:nth-child(3n+2) .art{background:linear-gradient(135deg,#e1f58d,#ffd6c8)}
-    .card:nth-child(3n) .art{background:linear-gradient(135deg,#c9e2f4,#f2cbe4)}
-    .info{padding:17px}.category{font-size:11px;color:#777}.info h3{margin:7px 0;font-size:18px}
-    .info p{min-height:42px;margin:0;color:#666;font-size:13px}.price{margin-top:15px;font-weight:700}
-    .message{padding:22px;color:#666;text-align:center}.notice{font-size:12px;color:#777;margin:-52px 0 55px}
-    footer{border-top:1px solid #e6e4dc;padding:22px 0;color:#777;font-size:12px}
-    @media(max-width:600px){.hero{padding-top:52px}h1{letter-spacing:-2px}.shop-head{display:block}.shop-head p{margin-top:7px}}
+    :root{--ink:#19191d;--muted:#707078;--paper:#f7f6f2;--line:#e7e5df;--purple:#968bdc}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+    header,main,footer{width:min(1120px,calc(100% - 40px));margin-inline:auto}header{height:74px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+    a{color:inherit;text-decoration:none}.logo{font-size:21px;font-weight:800;letter-spacing:-1.2px}.logo span{color:var(--purple)}.tag{font-size:12px;color:var(--muted)}
+    .hero{padding:76px 0 56px}.eyebrow{font-size:11px;font-weight:750;letter-spacing:2px;color:#777681}.hero h1{font-size:clamp(48px,8vw,82px);line-height:.98;letter-spacing:-5px;margin:17px 0}.hero h1 span{color:var(--purple)}.hero p{max-width:520px;color:var(--muted);font-size:16px}
+    .shop-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:10px 0 24px}.shop-head h2{font-size:30px;letter-spacing:-1.2px;margin:0}.shop-head p{font-size:12px;color:var(--muted);margin:0}.markup-note{margin:-13px 0 22px;color:#777;font-size:11px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:18px;padding-bottom:72px}.card{background:white;border:1px solid #eceae4;border-radius:12px;overflow:hidden;box-shadow:0 3px 14px #19191d06}.art{height:150px;display:grid;place-items:center;background:linear-gradient(135deg,#d9d3fa,#f1cbe4);font-size:58px;color:#292633}.card:nth-child(3n+2) .art{background:linear-gradient(135deg,#e1f58f,#ffd6c8)}.card:nth-child(3n) .art{background:linear-gradient(135deg,#c9e2f4,#c8e9dc)}
+    .info{padding:18px}.category{font-size:11px;color:#777}.info h3{margin:7px 0;font-size:19px;line-height:1.3;letter-spacing:-.3px}.info p{margin:0;color:#666;font-size:13px;line-height:1.55;white-space:pre-line}.price-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;padding-top:14px;border-top:1px solid #f0eee9}.price{font-size:19px;font-weight:750}.price-caption{font-size:10px;color:#888;text-align:right}.message{grid-column:1/-1;padding:34px 20px;color:#666;text-align:center;background:white;border-radius:10px}.error{color:#8e3535}.footnote{margin:-42px 0 58px;font-size:11px;color:#818087}footer{border-top:1px solid var(--line);padding:22px 0;color:#777;font-size:12px}
+    @media(max-width:600px){header,main,footer{width:calc(100% - 30px)}header{height:64px}.tag{font-size:10px}.hero{padding:54px 0 42px}.hero h1{letter-spacing:-3px}.hero p{font-size:14px}.shop-head{display:block}.shop-head p{margin-top:5px}.shop-head h2{font-size:26px}.grid{gap:14px}.art{height:135px}.footnote{margin-top:-38px}}
   </style>
 </head>
 <body>
-  <header><a class="logo" href="/">xauhu<span>.ai</span></a><span class="tag">Tools for what's next</span></header>
+  <header><a class="logo" href="/" aria-label="Xauhu AI Shop home">xauhu<span>.ai</span></a><span class="tag">Tools for what's next</span></header>
   <main>
-    <section class="hero">
-      <div class="eyebrow">YOUR AI, UPGRADED</div>
-      <h1>Good ideas.<br><span>Better tools.</span></h1>
-      <p>Discover useful AI tools and digital products picked to help you create, learn, and get more done.</p>
-    </section>
-    <section>
-      <div class="shop-head"><h2>Explore the shop</h2><p>Curated tools for curious minds.</p></div>
-      <div id="products" class="grid"><div class="message">Loading products…</div></div>
-      <p class="notice">Product browsing is available. Online ordering will be added after secure payment setup.</p>
-    </section>
+    <section class="hero"><div class="eyebrow">YOUR AI, UPGRADED</div><h1>Good ideas.<br><span>Better tools.</span></h1><p>Discover useful AI tools and digital products picked to help you create, learn, and get more done.</p></section>
+    <section aria-labelledby="shop-title"><div class="shop-head"><h2 id="shop-title">Explore the shop</h2><p>Curated tools for curious minds.</p></div><p class="markup-note">Displayed price adds $0.002 (0.2¢) to the reseller price.</p><div id="products" class="grid" aria-live="polite"><div class="message">Loading products…</div></div><p class="footnote">Ordering and customer accounts are not enabled yet. Displayed prices are estimates until checkout is implemented.</p></section>
   </main>
   <footer>© <span id="year"></span> Xauhu AI Shop</footer>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
     const host = document.getElementById('products');
     const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const formatUSD = amount => new Intl.NumberFormat(undefined, {style:'currency',currency:'USD',minimumFractionDigits:3,maximumFractionDigits:3}).format(amount);
     async function showProducts() {
       try {
-        const response = await fetch('/api/products');
-        if (!response.ok) throw new Error('Product request failed');
+        const response = await fetch('/api/products', {headers:{accept:'application/json'}});
+        if (!response.ok) throw new Error(`Product request failed (${response.status})`);
         const result = await response.json();
-        const products = Array.isArray(result) ? result : result.products || result.data || [];
-        if (!products.length) {
+        const products = Array.isArray(result) ? result : result.products || result.data || result.items || [];
+        if (!Array.isArray(products) || !products.length) {
           host.innerHTML = '<div class="message">No products are available right now.</div>';
           return;
         }
         host.innerHTML = products.map((p, i) => {
-          const name = p.name || p.title || 'AI product';
+          const name = p.name || p.title || p.productName || 'AI product';
           const category = p.category || p.type || 'AI tool';
-          const description = p.description || p.summary || 'Explore this product for more details.';
-          const price = Number(p.price ?? p.resellerPrice ?? p.amount);
-          const productPrice = Number.isFinite(price)
-            ? new Intl.NumberFormat(undefined, {style:'currency',currency:'USD'}).format(price)
-            : 'See product details';
-          return `<article class="card"><div class="art" aria-hidden="true">${['✳','✦','◈','↗'][i % 4]}</div><div class="info"><div class="category">${escapeHTML(category)}</div><h3>${escapeHTML(name)}</h3><p>${escapeHTML(description)}</p><div class="price">${productPrice}</div></div></article>`;
+          const description = p.description || p.summary || p.details || 'Explore this product for more details.';
+          const rawPrice = p.resellerPrice ?? p.price ?? p.amount ?? p.cost;
+          const basePrice = typeof rawPrice === 'number' ? rawPrice : Number(String(rawPrice ?? '').replace(/[^\d.-]/g, ''));
+          const displayPrice = Number.isFinite(basePrice) && basePrice >= 0 ? formatUSD(basePrice + 0.002) : 'Price unavailable';
+          return `<article class="card"><div class="art" aria-hidden="true">${['✳','✦','◈','↗'][i % 4]}</div><div class="info"><div class="category">${escapeHTML(category)}</div><h3>${escapeHTML(name)}</h3><p>${escapeHTML(description)}</p><div class="price-row"><span class="price">${displayPrice}</span><span class="price-caption">Customer price<br>includes 0.2¢ markup</span></div></div></article>`;
         }).join('');
       } catch (error) {
-        host.innerHTML = '<div class="message">Could not load products. Check the API setup and try again.</div>';
-        console.error(error);
+        host.innerHTML = '<div class="message error">Could not load products. Please try again later.</div>';
+        console.error('Xauhu product loading:', error);
       }
     }
     showProducts();
